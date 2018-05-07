@@ -44,8 +44,8 @@ function main()
   for ( var i = 0; i < RESOLUTION; i++ )
   {
     var S = i / (RESOLUTION-1); // [0,1]
-    var R = Math.max( 1 - S , 0.0 );
-    var G = 1
+    var R = 1
+    var G = Math.max( 1 - S , 0.0 );
     var B = Math.max( 1 - S , 0.0 );
     var color = new THREE.Color( R, G, B );
     cmap.push( [ S, '0x' + color.getHexString() ] );
@@ -56,10 +56,10 @@ function main()
   lut.addColorMap( 'mycolormap', cmap );
   lut.changeColorMap( 'mycolormap' );
   scene.add( lut.setLegendOn( {
-        'layout':'horizontal',
-        'position': { 'x': 0.6, 'y': -1.1, 'z': 2 },
-        'dimensions': { 'width': 0.15, 'height': 1.2 }
-        } ) );
+      'layout':'horizontal',
+      'position': { 'x': 0.6, 'y': -1.1, 'z': 2 },
+      'dimensions': { 'width': 0.15, 'height': 1.2 }
+  } ) );
 
   var geometry = new THREE.Geometry();
   var material = new THREE.MeshBasicMaterial();
@@ -67,66 +67,55 @@ function main()
   var nvertices = vertices.length;
   for ( var i = 0; i < nvertices; i++ )
   {
-    var vertex = new THREE.Vector3().fromArray( vertices[i] );
-    geometry.vertices.push( vertex );
+      var vertex = new THREE.Vector3().fromArray( vertices[i] );
+      geometry.vertices.push( vertex );
   }
 
   var nfaces = faces.length;
   for ( var i = 0; i < nfaces; i++ )
   {
-    var id = faces[i];
-    var face = new THREE.Face3( id[0], id[1], id[2] );
-    geometry.faces.push( face );
+      var id = faces[i];
+      var face = new THREE.Face3( id[0], id[1], id[2] );
+      geometry.faces.push( face );
   }
 
+
+
   // Assign colors for each vertex
+
   material.vertexColors = THREE.VertexColors;
-  var S_max = Math.max.apply(null,scalars);
-  var S_min = Math.min.apply(null,scalars);
   for ( var i = 0; i < nfaces; i++ )
   {
-    var id = faces[i];
-    var S0 = scalars[ id[0] ];
-    var S1 = scalars[ id[1] ];
-    var S2 = scalars[ id[2] ];
-    var C0 = GetColor(S0,S_min,S_max,cmap);
-    var C1 = GetColor(S1,S_min,S_max,cmap);
-    var C2 = GetColor(S2,S_min,S_max,cmap);
-    geometry.faces[i].vertexColors.push( C0 );
-    geometry.faces[i].vertexColors.push( C1 );
-    geometry.faces[i].vertexColors.push( C2 );
+      var id = faces[i];
+      var S0 = scalars[ id[0] ];
+      var S1 = scalars[ id[1] ];
+      var S2 = scalars[ id[2] ];
+      S0 = Math.floor( ( S0 - 0.1 ) / 0.7 * 255 );
+      S1 = Math.floor( ( S1 - 0.1 ) / 0.7 * 255 );
+      S2 = Math.floor( ( S2 - 0.1 ) / 0.7 * 255 );
+      var C0 = new THREE.Color().setHex( cmap[ S0 ][1] );
+      var C1 = new THREE.Color().setHex( cmap[ S1 ][1] );
+      var C2 = new THREE.Color().setHex( cmap[ S2 ][1] );
+      geometry.faces[i].vertexColors.push( C0 );
+      geometry.faces[i].vertexColors.push( C1 );
+      geometry.faces[i].vertexColors.push( C2 );
+
   }
+
+
 
   var triangle = new THREE.Mesh( geometry, material );
   scene.add( triangle );
 
+
   loop();
-
   function loop()
+
   {
-    requestAnimationFrame( loop );
-    renderer.render( scene, camera );
-  }
 
-  function GetColor(S,S_min,S_max,cmap){
-    var resolution = cmap.length
-    var index = Normalize(S,S_min,S_max)*(resolution-1);
-    var index0 = Math.floor(index);
-    var index1 = Math.min(index0+1,resolution-1);
-    var t = index - index0; // t = (index-index0)/(index1-index0)
-    var C0 = new THREE.Color().setHex( cmap[ index0 ][1] );
-    var C1 = new THREE.Color().setHex( cmap[ index1 ][1] );
-    var R = Interpolate(C0.r,C1.r,t);
-    var G = Interpolate(C0.g,C1.g,t);
-    var B = Interpolate(C0.b,C1.b,t);
-    return new THREE.Color(R,G,B);
-  }
+      requestAnimationFrame( loop );
 
-  function Normalize(S,S_min,S_max){ // e.g. S:0.1~0.8 -> S:0~1
-    return (S-S_min)/(S_max-S_min);
-  }
+      renderer.render( scene, camera );
 
-  function Interpolate(S0,S1,t){
-    return (1-t)*S0+t*S1;
-  }
+    }
 }
