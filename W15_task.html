@@ -1,0 +1,63 @@
+<html>
+  <head>
+	  <title>W15: Final Task</title>
+  </head>
+  <body style="margin:0">
+
+
+    <script src="three.js"></script>
+    <script src="TrackballControls.js"></script>
+    <script src="Lut.js"></script>
+    <script src="KVS.min.js"></script>
+    <script src="KVS2THREE.min.js"></script>
+    <script src="KVSLobsterData.js"></script>
+    <script src="Bounds.js"></script>
+    <script src="Isosurfaces_final1.js"></script>
+    <script src="Isosurfaces_final2.js"></script>
+    <script src="w15_main_task.js"></script>
+
+
+
+<center>
+
+<div style="padding: 10px; margin-bottom: 10px; border: 5px double #333333;">
+
+    <div id="floating-menu">
+      <div>
+        <span>isovalue</span>
+       <input type="range" id="isovalue_range"  min="1" max="254" step="1" oninput="document.getElementById('isovalue').value=this.value">
+       <output type="number" id="isovalue">128</output>
+
+      </div>
+      <div>
+
+        <span>plane</span>
+        <input type="checkbox" id="plane_checkbox">
+
+        <input type="range" id="plane_range0"  min="0" max="100" step="1" oninput="document.getElementById('plane').value=this.value">
+        <output type="number" id="plane">50</output>
+
+        <div id="plane_range">
+
+          <li><input type="range" id="plane_range1" disabled="true"></li>
+          <li><input type="range" id="plane_range2" disabled="true"></li>
+          <li><input type="range" id="plane_range3" disabled="true"></li>
+
+        </div>
+      </div>
+    </div>
+
+
+    </div>
+
+    </center>
+
+    <script>
+	    main();
+	  </script>
+
+
+
+
+  </body>
+</html>
